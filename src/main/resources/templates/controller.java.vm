@@ -73,7 +73,7 @@ public class ${table.controllerName} {
     @GetMapping("/page")
     public Result findPage(@RequestParam Integer pageNum,
                                     @RequestParam Integer pageSize,
-                                    @RequestParam(defaultValue = "") String username,) {
+                                    @RequestParam(defaultValue = "") String username) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.like(Strings.isNotEmpty(username),User::getUsername,username);
         lambdaQueryWrapper.orderByDesc(User::getId);

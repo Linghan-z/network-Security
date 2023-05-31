@@ -4,9 +4,17 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/vue?serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/network_security?serverTimezone=GMT%2B8
     username: root
     password: 19991125
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: 123456
+  data:
+    neo4j:
+      database: neo4j
 mybatis:
   mapper-locations: classpath:mapper/*.xml  # ????mybatis?xml??
 #  configuration:

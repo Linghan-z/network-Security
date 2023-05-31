@@ -1,8 +1,14 @@
 package com.zlhhh.networksecurity.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zlhhh.networksecurity.common.Constants;
+import com.zlhhh.networksecurity.common.Result;
+import com.zlhhh.networksecurity.entity.dto.UserDTO;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -13,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author zlhhh
@@ -26,24 +32,27 @@ public class UserController {
     @Resource
     private IUserService userService;
 
-    @PostMapping
-    public Result save(@RequestBody User user) {
-        // 新增或更新
-        return Result.success(userService.saveOrUpdate(user));
-    }
-    @PostMapping("/del/batch")
-    public Result deleteBatch(@RequestBody List<Integer> ids) {
-        return Result.success(userService.removeBatchByIds(ids));
-    }
-
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id) {
-        return Result.success(userService.removeById(id));
+    @PostMapping("/login")
+    public Result login(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
+        String password = userDTO.getPassword();
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
+            // 失败
+            return Result.error(Constants.CODE_400, "参数错误");
+        }
+        UserDTO dto = userService.login(userDTO);
+        return Result.success(dto);  // 成功调用
     }
 
-    @GetMapping
-    public Result findAll() {
-        return Result.success(userService.list());
+    @PostMapping("/register")
+    public Result register(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
+        String password = userDTO.getPassword();
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
+            // 失败
+            return Result.error(Constants.CODE_400, "参数错误");
+        }
+        return Result.success(userService.register(userDTO));
     }
 
     @GetMapping("/{id}")
@@ -51,14 +60,10 @@ public class UserController {
         return Result.success(userService.getById(id));
     }
 
-    @GetMapping("/page")
-    public Result findPage(@RequestParam Integer pageNum,
-                                    @RequestParam Integer pageSize,
-                                    @RequestParam(defaultValue = "") String username,) {
+    @GetMapping("/username/{username}")
+    public Result findOne(@PathVariable String username) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.like(Strings.isNotEmpty(username),User::getUsername,username);
-        lambdaQueryWrapper.orderByDesc(User::getId);
-        return Result.success(userService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
+        lambdaQueryWrapper.eq(User::getUsername, username);
+        return Result.success(userService.getOne(lambdaQueryWrapper));
     }
-
 }
