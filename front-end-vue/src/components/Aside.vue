@@ -17,7 +17,15 @@
     <el-menu-item index="/neo4j">
       <i class="el-icon-share"></i><span slot="title">Neo4j</span>
     </el-menu-item>
-    <el-submenu index="2">
+    <el-submenu index="">
+      <template slot="title"><i class="el-icon-menu"></i><span slot="title">Neo4j</span></template>
+      <el-menu-item index="/neo4j">
+        <template slot="title"><i class="el-icon-s-custom"></i>图谱关系查看</template>
+      </el-menu-item>
+      <el-menu-item index="/neo4jDetail">
+        <template slot="title"><i class="el-icon-document"></i>实体详情查询</template>
+      </el-menu-item>
+    </el-submenu><el-submenu index="2">
       <template slot="title"><i class="el-icon-menu"></i><span slot="title">系统管理</span></template>
       <el-menu-item index="/user">
         <template slot="title"><i class="el-icon-s-custom"></i>用户管理</template>

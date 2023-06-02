@@ -12,7 +12,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("/**")  // 拦截所有请求，通过判断token是否合法来决定是否需要登录
-                .excludePathPatterns("/**/login", "/**/register", "/area/**")  // 放行的接口
+                .excludePathPatterns("/**/login", "/**/register", "/area/**", "/entity/**")  // 放行的接口
                 .excludePathPatterns("/swagger-ui/**", "/swagger-resources/**", "/v3/**", "/error/**");  // 放行swagger
         WebMvcConfigurer.super.addInterceptors(registry);
     }

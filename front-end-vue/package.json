@@ -12,6 +12,8 @@
     "element-ui": "^2.15.13",
     "jquery": "^3.7.0",
     "neovis.js": "^2.1.0",
+    "node-sass": "^9.0.0",
+    "sass-loader": "^13.3.1",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"
@@ -21,8 +23,6 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
-    "node-sass": "^9.0.0",
-    "sass-loader": "^13.3.0",
     "style-loader": "^3.3.3",
     "vue-template-compiler": "^2.6.14"
   },

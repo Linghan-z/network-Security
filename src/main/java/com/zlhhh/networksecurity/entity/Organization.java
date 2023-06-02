@@ -19,15 +19,15 @@ public class Organization {
     @Id
     @GeneratedValue
     private long id;
-    private String name;
+    private String value;
 
     private String introduction;
 
     private String motivation;
 
-    @Property(name = "occurtime")
-    private Integer occurTime;
+//    @Property(name = "occurtime")
+    private String occurtime;
 
-    @Property(name = "referlink")
-    private String referLink;
+//    @Property(name = "referlink")
+    private String referlink;
 }

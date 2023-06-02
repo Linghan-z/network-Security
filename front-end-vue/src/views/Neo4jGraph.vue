@@ -15,21 +15,12 @@
     </div>
     <div>
       <span class="ml-5" style="margin-right: 20px">实体名称</span>
-<!--      <el-select class="ml-5" v-model="from" placeholder="请选择" style="width: 150px">-->
-<!--        <el-option-->
-<!--            v-for="item in labels"-->
-<!--            :key="item.value"-->
-<!--            :label="item.label"-->
-<!--            :value="item.value"-->
-<!--            @change="changeFrom">-->
-<!--        </el-option>-->
-<!--      </el-select>-->
       <el-input class="ml-5" v-model="searchValue" type="String" clearable placeholder="搜索内容" style="width: 150px"
                 @change="valueSearch"></el-input>
       <el-button class="ml-5" type="primary" @click="submit">搜索</el-button>
     </div>
     <div id="viz"></div>
-    Cypher query: <textarea rows="4" cols=50 id="cypher"></textarea><br>
+    Cypher query: <textarea rows="4" cols=50 id="cypher">{{ this.cypher }}</textarea><br>
   </div>
 </template>
 
@@ -38,7 +29,7 @@
 import $ from 'jquery';
 
 // 引入neovis.js
-import NeoVis from '../utils/neovis.js'
+import NeoVis from 'neovis.js'
 
 export default {
   name: "Neo4jGraph",
@@ -47,155 +38,135 @@ export default {
   data() {
     return {
       viz: {},  //定义一个viz对象
-      options: [{
-        value: 'Organization',
-        label: '组织',
-        children: [{
-          value: 'organization_has_area',
-          label: '目标地区',
-          children: [{
+      options:
+          [
+            {
+              value: 'Organization',
+              label: '组织',
+              children: [{
+                value: 'organization_has_area',
+                label: '目标地区',
+                children: [{
+                  value: 'Area',
+                  label: '地区'
+                }]
+              }, {
+                value: 'organization_from',
+                label: '发源地',
+                children: [{
+                  value: 'Area',
+                  label: '地区'
+                }]
+              }, {
+                value: 'organization_has_industry',
+                label: '目标行业',
+                children: [{
+                  value: 'Industry',
+                  label: '行业'
+                }]
+              }, {
+                value: 'organization_has_attacktype',
+                label: '攻击方式',
+                children: [{
+                  value: 'Attacktype',
+                  label: '攻击方式'
+                }]
+              }, {
+                value: 'organization_has_domain',
+                label: '拥有域名',
+                children: [{
+                  value: 'Domain',
+                  label: '域名'
+                }]
+              }, {
+                value: 'organization_has_ip',
+                label: 'IP',
+                children: [{
+                  value: 'Ip',
+                  label: 'IP'
+                }]
+              }, {
+                value: 'organization_has_sha256',
+                label: 'Sha256',
+                children: [{
+                  value: 'Sha256',
+                  label: 'Sha256'
+                }]
+              }]
+            }, {
             value: 'Area',
-            label: '地区'
-          }]
-        }, {
-          value: 'organization_from',
-          label: '发源地',
-          children: [{
-            value: 'Area',
-            label: '地区'
-          }]
-        }, {
-          value: 'organization_has_industry',
-          label: '目标行业',
-          children: [{
+            label: '地区',
+            children: [{
+              value: 'area_targeted_by_org',
+              label: '被攻击',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }, {
+              value: 'area_has_organization',
+              label: '发源地',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }, {
             value: 'Industry',
-            label: '行业'
-          }]
-        }, {
-          value: 'organization_has_attacktype',
-          label: '攻击方式',
-          children: [{
+            label: '行业',
+            children: [{
+              value: 'industry_targeted_by_org',
+              label: '被攻击',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }, {
             value: 'Attacktype',
-            label: '攻击方式'
-          }]
-        }, {
-          value: 'organization_has_domain',
-          label: '拥有域名',
-          children: [{
-            value: 'Domain',
-            label: '域名'
-          }]
-        }, {
-          value: 'organization_has_ip',
-          label: 'IP',
-          children: [{
+            label: '攻击方式',
+            children: [{
+              value: 'attacktype_used_by_org',
+              label: '被组织使用',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }, {
             value: 'Ip',
-            label: 'IP'
-          }]
-        }, {
-          value: 'organization_has_sha256',
-          label: 'Sha256',
-          children: [{
+            label: 'IP',
+            children: [{
+              value: 'ip_possessed_by_org',
+              label: '所属组织',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }, {
+            value: 'Domain',
+            label: 'Domain',
+            children: [{
+              value: 'domain_belongs_to_org',
+              label: '所属组织',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }, {
             value: 'Sha256',
-            label: 'Sha256'
-          }]
-        }]
-      }, {
-        value: 'Area',
-        label: '地区',
-        children: [{
-          value: 'area_targeted_by_org',
-          label: '被攻击',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }, {
-          value: 'area_has_organization',
-          label: '发源地',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }, {
-        value: 'Industry',
-        label: '行业',
-        children: [{
-          value: 'industry_targeted_by_org',
-          label: '被攻击',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }, {
-        value: 'Attacktype',
-        label: '攻击方式',
-        children: [{
-          value: 'attacktype_used_by_org',
-          label: '被组织使用',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }, {
-        value: 'Ip',
-        label: 'IP',
-        children: [{
-          value: 'ip_possessed_by_org',
-          label: '所属组织',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }, {
-        value: 'Domain',
-        label: 'Domain',
-        children: [{
-          value: 'domain_belongs_to_org',
-          label: '所属组织',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }, {
-        value: 'Sha256',
-        label: 'Sha256',
-        children: [{
-          value: 'sha256_possessed_by_org',
-          label: '所属组织',
-          children: [{
-            value: 'Organization',
-            label: '组织'
-          }]
-        }]
-      }],
-      // labels: [{
-      //   value: 'Organization',
-      //   label: '组织'
-      // }, {
-      //   value: 'Area',
-      //   label: '地区'
-      // }, {
-      //   value: 'Industry',
-      //   label: '行业'
-      // }, {
-      //   value: 'Attacktype',
-      //   label: '攻击方式'
-      // }, {
-      //   value: 'Ip',
-      //   label: 'IP'
-      // }, {
-      //   value: 'Domain',
-      //   label: 'Domain'
-      // }, {
-      //   value: 'Sha256',
-      //   label: 'Sha256'
-      // }],
+            label: 'Sha256',
+            children: [{
+              value: 'sha256_possessed_by_org',
+              label: '所属组织',
+              children: [{
+                value: 'Organization',
+                label: '组织'
+              }]
+            }]
+          }],
       values: [],
       cypher: '',
       from: '',
@@ -204,7 +175,6 @@ export default {
       limitNum: 50,
       searchValue: '',
       searchValueCypher: '',
-      searchLabel: '',
       limit: ''
     }
   },
@@ -250,16 +220,16 @@ export default {
         },
         labels: {
           Area: {
-            label: "name",
+            label: "value",
           },
           Organization: {
-            label: "name",
+            label: "value",
           },
           Industry: {
-            label: "industry",
+            label: "value",
           },
           Attacktype: {
-            label: "attacktype",
+            label: "value",
           },
           Ip: {
             label: "value",
@@ -273,7 +243,7 @@ export default {
         },
         relationships: {
           organization_form: {
-            value: "weight"
+            value: "weight",
           },
           area_targeted_by_org: {
             value: "weight"
@@ -356,31 +326,14 @@ export default {
     },
     valueSearch(searchValue) {
       this.searchValue = searchValue
-      if (this.searchValue !='') {
-        this.changeFrom()
-        this.searchValueCypher = ' WHERE n.' + this.searchLabel + '="' + this.searchValue + '" '
+      if (this.searchValue != '') {
+        this.searchLabel = ''
+        this.searchValueCypher = ''
+        this.searchValueCypher = ' WHERE n.value="' + this.searchValue + '" '
       } else {
         this.searchValueCypher = ''
       }
-
       console.log('======' + this.searchValueCypher)
-    },
-    changeFrom() {
-      this.searchLabel =''
-      this.searchValueCypher = ''
-      console.log('======' +this.searchValue)
-      console.log('======' +this.searchLabel)
-      if (this.searchLabel === '') {
-        if (this.from === 'Organization' || this.from === 'Area') {
-          this.searchLabel = 'name'
-        } else if (this.from === 'Industry') {
-          this.searchLabel = 'industry'
-        } else if (this.from === 'Attacktype') {
-          this.searchLabel = 'attacktype'
-        } else {
-          this.searchLabel = 'value'
-        }
-      }
     }
   },
 }
