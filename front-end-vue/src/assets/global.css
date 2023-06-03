@@ -50,3 +50,9 @@
     padding: 10px 0;
 }
 
+.row_style {
+    margin: 10px auto;
+    width: 80vw;
+    border-radius: 25px;
+}
+

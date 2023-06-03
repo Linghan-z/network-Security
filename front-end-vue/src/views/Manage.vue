@@ -1,11 +1,11 @@
 <template>
-  <div style="height: 100%">
-    <el-container style="height: 100%;">
+  <div style="height: 100vh">
+    <el-container style="height: 100vh;">
       <el-aside :width="sideWith + 'px'" style="height: 100vh; box-shadow: 2px 0 6px rgb(0 21 41)">
         <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow"/>
       </el-aside>
 
-      <el-container>
+      <el-container :width="'calc(100vw-'+this.sideWith + 'px)'">
         <el-header style="border-bottom: 1px solid #ccc">
           <Header :collapseBtnClass="collapseBtnClass" :collapse="collapse" :user="user"/>
         </el-header>
@@ -46,6 +46,7 @@ export default {
   },
   methods: {
     collapse() { //点击收缩按钮触发
+      console.log('calc(100vw-'+this.sideWith + 'px)')
       this.isCollapse = !this.isCollapse
       if (this.isCollapse) {
         this.sideWith = 64
@@ -71,5 +72,4 @@ export default {
 </script>
 
 <style lang="scss">
-
 </style>

@@ -14,9 +14,6 @@
     <el-menu-item index="/">
       <i class="el-icon-house"></i><span slot="title">主页</span>
     </el-menu-item>
-    <el-menu-item index="/neo4j">
-      <i class="el-icon-share"></i><span slot="title">Neo4j</span>
-    </el-menu-item>
     <el-submenu index="">
       <template slot="title"><i class="el-icon-menu"></i><span slot="title">Neo4j</span></template>
       <el-menu-item index="/neo4j">
