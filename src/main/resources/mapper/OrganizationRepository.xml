@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlhhh.networksecurity.mapper.OrganizationRepository">
+    <select id="createNode" resultType="string"></select>
+    <select id="findAll" resultType="com.zlhhh.networksecurity.entity.Neo4jNodeOrganization"></select>
+
+    <select id="searchOrganization" resultType="com.zlhhh.networksecurity.entity.Neo4jNodeOrganization"></select>
+
+</mapper>

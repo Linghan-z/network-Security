@@ -63,10 +63,10 @@ export default {
       entities:
           [
             {
-              value: 'organization',
+              value: 'neo4jNodeOrganization',
               label: '组织'
             }, {
-            value: 'area',
+            value: 'neo4jNodeArea',
             label: '地区'
           }, {
             value: 'attacktype',
@@ -84,7 +84,7 @@ export default {
             value: 'sha256',
             label: 'Sha256'
           }],
-      label: 'organization',
+      label: 'neo4jNodeOrganization',
       entityName: '',
       cypher: '',
       neo4jHeight: 0,
@@ -115,7 +115,7 @@ export default {
       }
     },
     generateCypher() {
-      if (this.label === 'organization') {
+      if (this.label === 'neo4jNodeOrganization') {
         this.cypher = "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_from RETURN p UNION " +
             "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_has_area RETURN p UNION " +
             "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_has_attacktype RETURN p UNION " +

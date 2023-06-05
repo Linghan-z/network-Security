@@ -1,7 +1,6 @@
 package com.zlhhh.networksecurity.service;
 
-import com.zlhhh.networksecurity.entity.Area;
-import org.springframework.transaction.annotation.Transactional;
+import com.zlhhh.networksecurity.entity.Neo4jNodeArea;
 
 import java.util.List;
 
@@ -11,9 +10,9 @@ public interface AreaService {
      * @return
      */
 //    @Transactional(transactionManager = "neo4jTransactionManager")
-    List<Area> getAll();
+    List<Neo4jNodeArea> getAll();
 
-    Area findOrganizationOrigin(String organizationName);
+    Neo4jNodeArea findOrganizationOrigin(String organizationName);
 
     /**
      * 添加节点

@@ -11,11 +11,6 @@ import org.springframework.data.neo4j.core.schema.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @NodeEntity(label = "Attacktype")
-public class AttackType {
-    @Id
-    @GeneratedValue
-    private long id;
-
-    private String value;
-
+public class Neo4jNodeAttackType extends BaseNodeEntity {
+    private String introduction;
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zlhhh.networksecurity.mapper.AreaMapper">
-    <select id="findAll" resultType="com.zlhhh.networksecurity.entity.Area"></select>
+    <select id="findAll" resultType="com.zlhhh.networksecurity.entity.Neo4jNodeArea"></select>
 
 
-    <select id="findOrganizationOrigin" parameterType="String" resultType="com.zlhhh.networksecurity.entity.Area"></select>
-    <select id="organizationHasArea" resultType="com.zlhhh.networksecurity.entity.Area"></select>
+    <select id="findOrganizationOrigin" parameterType="String" resultType="com.zlhhh.networksecurity.entity.Neo4jNodeArea"></select>
+    <select id="organizationHasArea" resultType="com.zlhhh.networksecurity.entity.Neo4jNodeArea"></select>
 
 </mapper>

@@ -1,7 +1,7 @@
 package com.zlhhh.networksecurity.service.impl;
 
+import com.zlhhh.networksecurity.entity.Neo4jNodeArea;
 import com.zlhhh.networksecurity.mapper.AreaMapper;
-import com.zlhhh.networksecurity.entity.Area;
 import com.zlhhh.networksecurity.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,15 +15,15 @@ public class AreaServiceImpl implements AreaService {
     private AreaMapper areaMapper;
 
     @Override
-    public List<Area> getAll() {
-        List<Area> allArea = areaMapper.findAll();
-        return allArea;
+    public List<Neo4jNodeArea> getAll() {
+        List<Neo4jNodeArea> allNeo4jNodeArea = areaMapper.findAll();
+        return allNeo4jNodeArea;
     }
 
     @Override
-    public Area findOrganizationOrigin(String organizationName) {
-        Area area = areaMapper.findOrganizationOrigin(organizationName);
-        return area;
+    public Neo4jNodeArea findOrganizationOrigin(String organizationName) {
+        Neo4jNodeArea neo4jNodeArea = areaMapper.findOrganizationOrigin(organizationName);
+        return neo4jNodeArea;
     }
 //
 //    @Override
