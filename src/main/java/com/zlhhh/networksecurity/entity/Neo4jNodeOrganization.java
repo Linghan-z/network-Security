@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @NodeEntity(label = "Organization")
-public class Neo4jNodeOrganization extends BaseNodeEntity{
+public class Neo4jNodeOrganization extends Neo4jBaseNodeEntity {
 
     private String introduction;
 

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zlhhh.networksecurity.entity.EntityDetails;
 import com.zlhhh.networksecurity.entity.Neo4jNodeOrganization;
 import com.zlhhh.networksecurity.mapper.EntityDetailsMapper;
-import com.zlhhh.networksecurity.mapper.OrganizationRepository;
+import com.zlhhh.networksecurity.mapper.repository.OrganizationRepository;
 import com.zlhhh.networksecurity.service.OrganizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

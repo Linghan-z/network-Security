@@ -2,9 +2,7 @@ package com.zlhhh.networksecurity.service;
 
 import com.zlhhh.networksecurity.entity.Neo4jNodeOrganization;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface OrganizationService {
     List<Neo4jNodeOrganization> getAll();

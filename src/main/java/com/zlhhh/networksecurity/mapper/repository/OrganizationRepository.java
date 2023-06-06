@@ -1,4 +1,4 @@
-package com.zlhhh.networksecurity.mapper;
+package com.zlhhh.networksecurity.mapper.repository;
 
 import com.zlhhh.networksecurity.entity.Neo4jNodeOrganization;
 import org.apache.ibatis.annotations.Param;

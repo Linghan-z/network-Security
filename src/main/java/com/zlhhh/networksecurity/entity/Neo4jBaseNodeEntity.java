@@ -15,7 +15,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @NodeEntity
-public class BaseNodeEntity {
+public class Neo4jBaseNodeEntity {
     @Id
     @GeneratedValue
     private long id;
