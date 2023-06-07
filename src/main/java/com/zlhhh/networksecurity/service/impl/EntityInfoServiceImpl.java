@@ -12,6 +12,7 @@ import com.zlhhh.networksecurity.service.EntityInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +24,12 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
     private static final Log LOG = Log.get();
 
 
-    // TODO: 建议使用构造函数注入（Constructor Injection）或Setter方法注入（Setter Injection）的方式来注入依赖项。这样做可以使代码更清晰、更易于测试和更安全。
-
+    // 建议使用构造函数注入（Constructor Injection）或Setter方法注入（Setter Injection）的方式来注入依赖项。这样做可以使代码更清晰、更易于测试和更安全。
+    // 而非@Autowired
     private Neo4jEntityRepository neo4jEntityRepository;
+    @Resource
+    private EntityInfoMapper entityInfoMapper;
 
-    // TODO: 不用@Autowired 注解，而是使用下面注释掉的构造方法
     public EntityInfoServiceImpl(Neo4jEntityRepository neo4jEntityRepository) {
         this.neo4jEntityRepository = neo4jEntityRepository;
     }
@@ -46,11 +48,10 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
      */
     @Override
     public String createNode(Integer entityId) {
-        EntityInfo entityInfo = queryEntity(entityId);
+        EntityInfo entityInfo = queryEntity(entityId, false);
         String label = entityInfo.getLabel();
         Map<String, Object> entityInfoMap = generateHashMap(entityInfo);
         System.out.println(entityInfoMap);
-
         return neo4jEntityRepository.createNode(label, entityInfoMap);
     }
 
@@ -62,27 +63,29 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
      */
     @Override
     public String setNode(Integer entityId) {
-        EntityInfo entityInfo = queryEntity(entityId);
+        EntityInfo entityInfo = queryEntity(entityId, false);
         String label = entityInfo.getLabel();
         String value = entityInfo.getValue();
         Map<String, Object> entityInfoMap = generateHashMap(entityInfo);
-        System.out.println(entityInfoMap);
-        String setCypher;
-        setCypher = "SET n.introduction = '这是周杰伦'";
-        return neo4jEntityRepository.setNode(label, value, setCypher);
+//        System.out.println(entityInfoMap);
+        Long neo4jId = neo4jEntityRepository.searchNodeIdByNameAndLabel(label, value);
+        neo4jEntityRepository.deleteNodeById(label, neo4jId);
+        return neo4jEntityRepository.createNode(label, entityInfoMap);
     }
 
+    /**
+     * 删除节点
+     *
+     * @param entityId 实体在mysql中的id
+     */
     @Override
     public void deleteNode(Integer entityId) {
-        EntityInfo entityInfo = queryEntity(entityId);
+        EntityInfo entityInfo = queryEntity(entityId, true);
         String label = entityInfo.getLabel();
         String value = entityInfo.getValue();
         Long neo4jId = neo4jEntityRepository.searchNodeIdByNameAndLabel(label, value);
-        System.out.println("++++++++==========");
         System.out.println(neo4jId);
-        
-        // TODO: 这个delete好像不灵呀
-        neo4jEntityRepository.deleteById(neo4jId);
+        neo4jEntityRepository.deleteNodeById(label, neo4jId);
     }
 
     /**
@@ -120,17 +123,23 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
      * @param entityId
      * @return
      */
-    private EntityInfo queryEntity(Integer entityId) {
-        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(EntityInfo::getId, entityId);
-        EntityInfo entityInfo;
-        try {
-            entityInfo = getOne(lambdaQueryWrapper);  // 从数据库查询用户信息
-        } catch (Exception e) {
-            e.printStackTrace();  //  打印异常的堆栈
-            LOG.error(e);
-            // sql查询发生的错误（sql系统），返回错误信息
-            throw new ServiceException(Constants.CODE_500, "系统错误");
+    private EntityInfo queryEntity(Integer entityId, boolean isDelete) {
+        EntityInfo entityInfo = entityInfoMapper.selectById(entityId);
+//        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        lambdaQueryWrapper.eq(EntityInfo::getId, entityId);
+//        EntityInfo entityInfo;
+//        try {
+//            entityInfo = getOne(lambdaQueryWrapper);  // 从数据库查询用户信息
+//        } catch (Exception e) {
+//            e.printStackTrace();  //  打印异常的堆栈
+//            LOG.error(e);
+//            // sql查询发生的错误（sql系统），返回错误信息
+//            throw new ServiceException(Constants.CODE_500, "系统错误");
+//        }
+        entityInfo.setUpdated(true);
+        if (isDelete) {
+            entityInfo.setIsDeleted(true);
+            entityInfoMapper.updateById(entityInfo);
         }
         return entityInfo;
     }
