@@ -25,35 +25,46 @@ public class TriplesServiceImpl extends ServiceImpl<TriplesMapper, Triples> impl
     /**
      * 获取organization的相关实体，不包含ip、domain、sha256
      *
-     * @param organizationName
+     * @param organizationNameList
      */
     @Override
-    public String getRelevantEntities(String organizationName) {
+    public String getRelevantEntities(List<String> organizationNameList) {
+        System.out.println("+++++++++++=============");
+        System.out.println(organizationNameList);
         List<String> entityLabelList = Arrays.asList("Area", "Attacktype", "Industry");
         // 根据Label标记分类（用于echart）
         Map<String, Integer> categoryMap = new HashMap<>();
         ArrayList<String> categoryList = new ArrayList<>();
         categoryList.add("Organization");
-        categoryMap.put("Organization", categoryList.indexOf("Organization") + 1);
-        LambdaQueryWrapper<Triples> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Triples::getHeadValue, organizationName);
-        lambdaQueryWrapper.in(Triples::getTailLabel, entityLabelList);
-        List<Triples> triplesList = triplesMapper.selectList(lambdaQueryWrapper);
-//        System.out.println(triplesList);
+        categoryMap.put("Organization", categoryList.indexOf("Organization"));
+
         List<EChartsNodeDTO> eChartsNodeDTOList = new ArrayList<>();  // echart节点的列表
+
+        // 查询
+        List<Triples> triplesList = new ArrayList<>();
+        for (String organizationName : organizationNameList) {
+            System.out.println(organizationName);
+            LambdaQueryWrapper<Triples> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(Triples::getHeadValue, organizationName);
+            lambdaQueryWrapper.in(Triples::getTailLabel, entityLabelList);
+            List<Triples> tempTriplesList = triplesMapper.selectList(lambdaQueryWrapper);
+            System.out.println(tempTriplesList);
+            triplesList.addAll(tempTriplesList);
+            // 处理Organization 节点
+            EChartsNodeDTO eChartOrgNodeDTO = new EChartsNodeDTO();
+            eChartOrgNodeDTO.setId(tempTriplesList.get(0).getHeadId().toString());
+            eChartOrgNodeDTO.setSymbolSize(10 * Math.log(tempTriplesList.size()) + 1);
+            eChartOrgNodeDTO.setName(organizationName);
+            eChartOrgNodeDTO.setCategory(0);
+            eChartsNodeDTOList.add(eChartOrgNodeDTO);
+        }
         List<EChartsRelationDTO> eChartsRelationDTOList = new ArrayList<>();  // echart关系的列表
-        EChartsNodeDTO eChartOrgNodeDTO = new EChartsNodeDTO();
-        eChartOrgNodeDTO.setId(triplesList.get(0).getHeadId().toString());
-        eChartOrgNodeDTO.setSymbolSize(Math.log(triplesList.size()) + 1);
-        eChartOrgNodeDTO.setValue(organizationName);
-        eChartOrgNodeDTO.setCategory(1);
-        eChartsNodeDTOList.add(eChartOrgNodeDTO);
         for (Triples triplesItem : triplesList) {
             // 处理节点
             EChartsNodeDTO eChartsNodeDTO = new EChartsNodeDTO();
             eChartsNodeDTO.setId(triplesItem.getTailId().toString());
-            eChartsNodeDTO.setValue(triplesItem.getTailValue());
-            eChartsNodeDTO.setSymbolSize(1.0);
+            eChartsNodeDTO.setName(triplesItem.getTailValue());
+            eChartsNodeDTO.setSymbolSize(10.0);
 
             // 判断label是否为新出现的，如果是新的就在categoryList中新增一个，并通过categoryMap映射 label和序数之间的关系
             // 如果不是新出现的则直接查询Map中的对应关系
@@ -61,11 +72,12 @@ public class TriplesServiceImpl extends ServiceImpl<TriplesMapper, Triples> impl
                 eChartsNodeDTO.setCategory(categoryMap.get(triplesItem.getTailLabel()));  // 按照Label来标记分类
             } else {
                 categoryList.add(triplesItem.getTailLabel());
-                categoryMap.put(triplesItem.getTailLabel(), categoryList.indexOf(triplesItem.getTailLabel()) + 1);
+                categoryMap.put(triplesItem.getTailLabel(), categoryList.indexOf(triplesItem.getTailLabel()));
                 eChartsNodeDTO.setCategory(categoryMap.get(triplesItem.getTailLabel()));  // 按照Label来标记分类
             }
-            eChartsNodeDTOList.add(eChartsNodeDTO);
-
+            if (!eChartsNodeDTOList.contains(eChartsNodeDTO)) {
+                eChartsNodeDTOList.add(eChartsNodeDTO);
+            }
             // 处理关系
             EChartsRelationDTO eChartsRelationDTO = new EChartsRelationDTO();
             eChartsRelationDTO.setSource(triplesItem.getHeadId().toString());
@@ -82,7 +94,7 @@ public class TriplesServiceImpl extends ServiceImpl<TriplesMapper, Triples> impl
             eChartsCategoryDTO.setName(categories);
             eChartsCategoryDTOList.add(eChartsCategoryDTO);
         }
-        result.put("cotegories", eChartsCategoryDTOList);
+        result.put("categories", eChartsCategoryDTOList);
         String json = JSONUtil.toJsonStr(result);
         System.out.println(json);
         return json;

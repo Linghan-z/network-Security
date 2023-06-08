@@ -2,13 +2,18 @@
   <div>
     <h1>
       Home
+      <ECharts></ECharts>
     </h1>
   </div>
 </template>
 
 <script>
+import ECharts from "@/components/ECharts.vue"
 export default {
-  name: "Home"
+  name: "Home",
+  components: {
+    ECharts
+  }
 }
 </script>
 

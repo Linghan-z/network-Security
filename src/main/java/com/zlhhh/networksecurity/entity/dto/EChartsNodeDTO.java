@@ -7,8 +7,7 @@ import lombok.Data;
 public class EChartsNodeDTO {
     private String id;  // eChart id是string
 //    private String label;
-    @JsonProperty("name")
-    private String value;
+    private String name;  // Entity的value
 //    private String introduction;
 //    private String occurtime;
 //    private String motivation;

@@ -5,15 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlhhh.networksecurity.common.Result;
 import com.zlhhh.networksecurity.entity.EntityInfo;
+import com.zlhhh.networksecurity.entity.dto.OrganizationEntityDTO;
 import com.zlhhh.networksecurity.service.EntityInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/EntityInfo")
+@RequestMapping("/entityInfo")
 @Api(tags = "实体信息操作")
 public class EntityInfoController {
     @Resource
@@ -36,6 +39,21 @@ public class EntityInfoController {
         lambdaQueryWrapper.eq(EntityInfo::getLabel, label);
         return Result.success(entityInfoService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
     }
+
+    @GetMapping("/organizations")
+    public Result getOrganizations() {
+        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(EntityInfo::getLabel, "Organization");
+        List<EntityInfo> entityInfoList = entityInfoService.list(lambdaQueryWrapper);
+        List<OrganizationEntityDTO> organizationEntityDTOList = new ArrayList<>();
+        for (EntityInfo entityInfo: entityInfoList) {
+            OrganizationEntityDTO organizationEntityDTO = new OrganizationEntityDTO();
+            organizationEntityDTO.setValue(entityInfo.getValue());
+            organizationEntityDTOList.add(organizationEntityDTO);
+        }
+        return Result.success(organizationEntityDTOList);
+    }
+
     @ApiOperation("查询实体信息")
     @GetMapping("/{entityValue}")
     public Result findEntity(@PathVariable String entityValue) {
