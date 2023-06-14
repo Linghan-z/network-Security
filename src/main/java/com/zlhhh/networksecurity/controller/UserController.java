@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlhhh.networksecurity.common.Constants;
 import com.zlhhh.networksecurity.common.Result;
 import com.zlhhh.networksecurity.entity.dto.UserDTO;
+import com.zlhhh.networksecurity.utils.TokenUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,5 +66,12 @@ public class UserController {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(User::getUsername, username);
         return Result.success(userService.getOne(lambdaQueryWrapper));
+    }
+    @GetMapping("/page")
+    public Result findPage(@RequestParam Integer pageNum,
+                           @RequestParam Integer pageSize) {
+        User currentUser = TokenUtils.getCurrentUser();
+        System.out.println("获取当前用户信息=================" + currentUser.getNickname());
+        return Result.success(userService.page(new Page<>(pageNum, pageSize)));
     }
 }

@@ -11,8 +11,8 @@
     </div>
     <el-dropdown style="width: 150px; cursor:pointer; text-align: right">
       <div>
-        <img :src="user.avatarUrl" alt=""
-             style="width: 30px;height: 30px; border-radius: 50%; position: relative;top: 10px;right: 5px">
+<!--        <img :src="user.avatarUrl" alt=""-->
+<!--             style="width: 30px;height: 30px; border-radius: 50%; position: relative;top: 10px;right: 5px">-->
         <span style="user-select: none">{{ user.nickname }}</span><i class="el-icon-arrow-down"
                                                                      style="margin-left: 5px; user-select: none"></i>
       </div>

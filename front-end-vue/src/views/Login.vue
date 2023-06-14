@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form :model="user" class="login-form" status-icon :rules="rules" ref="userForm">
-      <h2 class="title">管理系统</h2>
+      <h2 class="title">网络安全百科系统</h2>
       <el-form-item prop="username">
         <el-input
             v-model="user.username"

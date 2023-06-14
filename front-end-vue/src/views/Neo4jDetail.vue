@@ -2,16 +2,16 @@
   <div>
     <el-row class="search-row row_style flex row justify-start align-center">
       <span class="attribute_row"><i class="el-icon-search mr-5"></i>搜索 </span>
-      <span class="search-text">要查询的类别：</span>
-      <el-select v-model="label" placeholder="请选择" style="width: 150px;">
-        <el-option
-            v-for="item in entities"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-        </el-option>
-      </el-select>
-      <span style="width: 150px"></span>
+<!--      <span class="search-text">要查询的类别：</span>-->
+<!--      <el-select v-model="label" placeholder="请选择" style="width: 150px;">-->
+<!--        <el-option-->
+<!--            v-for="item in entities"-->
+<!--            :key="item.value"-->
+<!--            :label="item.label"-->
+<!--            :value="item.value">-->
+<!--        </el-option>-->
+<!--      </el-select>-->
+<!--      <span style="width: 150px"></span>-->
       <span class="search-text">请输入要查询内容：</span>
       <el-input v-model="entityName" placeholder="请输入内容" @keyup.enter.native="searchEntity"
                 style="width: 200px; margin-right: 50px"></el-input>
@@ -96,19 +96,30 @@ export default {
       try {
         console.log(this.label)
         console.log(this.entityName)
-        this.request.get("/entity/" + this.label + "/" + this.entityName, {
+        this.request.get("/entityInfo/" + this.entityName, {
           params: {
             entityName: this.entityName
           }
         }).then(res => {
-          this.tableData = res.data
+          // this.tableData = res.data
           delete res.data.id
+          delete res.data.neo4jId
+          delete res.data.updated
+          delete res.data.isDeleted
+
+          console.log(res.data)
+
+          for (let key in res.data) {
+            if (res.data[key] === null || res.data[key] === undefined || res.data[key] === '') {
+              delete res.data[key];
+            }
+          }
           this.neo4jHeight = 700
           this.tableData = Object.entries(res.data).map(([key, value]) => ({attribute: key, value}));
           this.generateCypher()
           this.entity = this.entityName
           // console.log(this.neo4jHeight)
-          // console.log(this.cypher)
+          console.log(this.cypher)
         })
       } catch (error) {
         console.error(error)

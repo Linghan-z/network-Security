@@ -5,10 +5,10 @@
     <div style="padding: 10px 0">
       <el-input style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search"
                 v-model="username"></el-input>
-      <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-search"
-                class="ml-5" v-model="email"></el-input>
-      <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-search"
-                class="ml-5" v-model="address"></el-input>
+<!--      <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-search"-->
+<!--                class="ml-5" v-model="email"></el-input>-->
+<!--      <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-search"-->
+<!--                class="ml-5" v-model="address"></el-input>-->
       <el-button class="ml-5" type="primary" @click="fuzzySearch">搜索</el-button>
       <el-button class="ml-5" type="warning" @click="reset">重置</el-button>
     </div>
@@ -42,12 +42,6 @@
       <el-table-column prop="username" label="用户名" width="100">
       </el-table-column>
       <el-table-column prop="nickname" label="昵称" width="120">
-      </el-table-column>
-      <el-table-column prop="address" label="地址">
-      </el-table-column>
-      <el-table-column prop="email" label="邮箱">
-      </el-table-column>
-      <el-table-column prop="phone" label="电话">
       </el-table-column>
       <el-table-column>
         <template slot-scope="scope" label="操作">
@@ -93,15 +87,6 @@
           <!--                  <el-option label="区域二" value="beijing"></el-option>-->
           <!--                </el-select>-->
         </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.address" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="form.email" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.phone" autocomplete="off"></el-input>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -122,8 +107,6 @@ export default {
       pageNum: 1,
       pageSize: 10,
       username: "",
-      email: "",
-      address: "",
       dialogFormVisible: false,  // 对话框
       form: {},
       multipleSelection: [],}
@@ -138,12 +121,9 @@ export default {
           pageNum: pageNum,
           pageSize: this.pageSize,
           username: this.username,
-          email: this.email,
-          address: this.address
         }
       }).then(res => {
         console.log(res)
-
         this.tableData = res.data.records
         this.total = res.data.total
 
@@ -161,8 +141,6 @@ export default {
           pageNum: 1,
           pageSize: this.pageSize,
           username: this.username,
-          email: this.email,
-          address: this.address
         }
       }).then(res => {
         console.log(res.data)
@@ -195,8 +173,6 @@ export default {
     },
     reset() {
       this.username = ""
-      this.email = ""
-      this.address = ""
       this.pageNum = 1
       this.load()
     },
