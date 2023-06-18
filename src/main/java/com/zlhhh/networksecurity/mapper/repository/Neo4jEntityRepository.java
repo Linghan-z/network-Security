@@ -22,18 +22,28 @@ public interface Neo4jEntityRepository extends Neo4jRepository<Neo4jBaseNodeEnti
     String createNode(@Param("label") String label, @Param("properties") Map<String, Object> properties);
 
 
-
     /**
-     * 新增或修改现有节点的属性
-     * 用不了啊
-     *
-     * @param label     节点的label
-     * @param value     节点值（从mysql中查出value然后通过value匹配neo4j中的节点
-     * @param setCypher SET的cypher，在实现类中拼接
-     * @return
+     * 修改现有的属性
+     * @param label         类别
+     * @param id            根据neo4j中的id找到节点
+     * @param value         值
+     * @param introduction  简介（organization、 attacktype）
+     * @param occurtime     产生时间（organization）
+     * @param motivation    动机（organization）
+     * @param referlink     参考链接（organization）
+     * @return              n.value: String
      */
-//    @Query("MATCH (n:`:#{literal(#label)}`) WHERE n.value=$value `:#{literal(#setCypher)}` RETURN n.value")
-//    String setNode(@Param("label") String label, @Param("value") String value, @Param("setCypher") String setCypher);
+    @Query("MATCH (n:`:#{literal(#label)}`) WHERE id(n) = $id SET n.value=$value, n.introduction=$introduction, n.occurtime=$occurtime, n.motivation=$motivation, n.referlink=$referlink RETURN n.value")
+    String setOrganizationNode(@Param("label") String label, @Param("id") Long id, @Param("value") String value, @Param("introduction") String introduction, @Param("occurtime") String occurtime, @Param("motivation") String motivation, @Param("referlink") String referlink);
+
+    @Query("MATCH (n:`:#{literal(#label)}`) WHERE id(n) = $id SET n.value=$value, n.format=$format RETURN n.value")
+    String setSha256Node(@Param("label") String label, @Param("id") Long id, @Param("value") String value, @Param("format") String format);
+
+    @Query("MATCH (n:`:#{literal(#label)}`) WHERE id(n) = $id SET n.value=$value, n.information=$information RETURN n.value")
+    String setAttackTypeNode(@Param("label") String label, @Param("id") Long id, @Param("value") String value, @Param("information") String information);
+
+    @Query("MATCH (n:`:#{literal(#label)}`) WHERE id(n) = $id SET n.value=$value RETURN n.value")
+    String setOtherNode(@Param("label") String label, @Param("id") Long id, @Param("value") String value);
 
     /**
      * 使用neo4j查询对应的节点并得到该节点在neo4j中的id

@@ -31,11 +31,17 @@ public interface EntityInfoService extends IService<EntityInfo> {
     String setNode(Integer entityId);
 
 
+    String setNodeInfo(List<Integer> entityIds);
+
+
     // TODO：在mysql中存一下neo4j中的id。。。
     /**
-     * 删除节点(比较麻烦，通过mysql中的id查询到实体的value，再通过cypher查询id，再删除）
+     * 删除节点(通过mysql中的id查询到实体的value，再通过cypher查询id，再删除）
      * @param entityId
      */
     void deleteNode(Integer entityId);
+
+
+    void deleteNodeBatch(List<Integer> entityIds);
 
 }

@@ -17,7 +17,7 @@ public class EntityInfo {
     @ApiModelProperty("id")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private long neo4jId;
+    private Long neo4jId;
     private String label;
     private String value;
     private String introduction;

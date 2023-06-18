@@ -29,25 +29,23 @@
           type="selection"
           width="55">
       </el-table-column>
-      <el-table-column prop="id" label="ID" width="80">
+      <el-table-column prop="id" label="id">
       </el-table-column>
-      <el-table-column prop="name" label="文件名称">
+      <el-table-column prop="head_node" label="头实体">
       </el-table-column>
-      <el-table-column prop="type" label="文件类型">
+      <el-table-column prop="relation" label="关系">
       </el-table-column>
-      <el-table-column prop="size" label="文件大小(kb)">
+      <el-table-column prop="tail_node" label="尾实体">
       </el-table-column>
-      <el-table-column label="下载">
-        <template slot-scope="scope">
-          <el-button type="primary" @click="download(scope.row.url)">下载</el-button>
-        </template>
+      <el-table-column prop="is_modified" label="已更改">
       </el-table-column>
-      <el-table-column prop="enable" label="启用">
-        <template slot-scope="scope">
-          <el-switch v-model:width="scope.row.enable" active-color="#13ce66" inactive-color="#ccc"
-                     @change="changeEnable(scope.row)"></el-switch>
-        </template>
-      </el-table-column>
+<!--      <el-table-column prop="id_deleted" label="已删除">-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="下载">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-button type="primary" @click="download(scope.row.url)">下载</el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column>
         <template slot-scope="scope" label="操作">
           <el-popconfirm
@@ -98,7 +96,7 @@ export default {
   },
   methods: {
     load() {
-      this.request.get("/file/page", {
+      this.request.get("/triples/page", {
         params: {
           pageNum: 1,
           pageSize: this.pageSize,

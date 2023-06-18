@@ -9,6 +9,7 @@ import com.zlhhh.networksecurity.entity.dto.OrganizationEntityDTO;
 import com.zlhhh.networksecurity.service.EntityInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -37,6 +38,7 @@ public class EntityInfoController {
                                      @RequestParam(defaultValue = "") String label) {
         LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(EntityInfo::getLabel, label);
+        lambdaQueryWrapper.eq(EntityInfo::getIsDeleted, false);
         return Result.success(entityInfoService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
     }
 
@@ -46,7 +48,7 @@ public class EntityInfoController {
         lambdaQueryWrapper.eq(EntityInfo::getLabel, "Organization");
         List<EntityInfo> entityInfoList = entityInfoService.list(lambdaQueryWrapper);
         List<OrganizationEntityDTO> organizationEntityDTOList = new ArrayList<>();
-        for (EntityInfo entityInfo: entityInfoList) {
+        for (EntityInfo entityInfo : entityInfoList) {
             OrganizationEntityDTO organizationEntityDTO = new OrganizationEntityDTO();
             organizationEntityDTO.setValue(entityInfo.getValue());
             organizationEntityDTOList.add(organizationEntityDTO);
@@ -54,12 +56,37 @@ public class EntityInfoController {
         return Result.success(organizationEntityDTOList);
     }
 
+    /**
+     * 查询实体的信息（模糊查询
+     * @param pageNum 1
+     * @param pageSize 当前页数
+     * @param entityValue 实体的value
+     * @return Result
+     */
     @ApiOperation("查询实体信息")
-    @GetMapping("/{entityValue}")
-    public Result findEntity(@PathVariable String entityValue) {
+    @GetMapping("/search")
+    public Result findEntity(@RequestParam Integer pageNum,
+                             @RequestParam Integer pageSize,
+                             @RequestParam(defaultValue = "") String entityValue) {
         LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(EntityInfo::getValue, entityValue);
-        return Result.success(entityInfoService.getOne(lambdaQueryWrapper));
+        lambdaQueryWrapper.like(Strings.isNotEmpty(entityValue), EntityInfo::getValue, entityValue);
+        return Result.success(entityInfoService.page(new Page<>(pageNum,pageSize), lambdaQueryWrapper));
+    }
+
+    /**
+     * 查询没有更新到neo4j中的实体
+     * @param pageNum 1
+     * @param pageSize 当前页数
+     * @return Result
+     */
+    @ApiOperation("获取没有更新的实体")
+    @GetMapping("/notUpdatedPage")
+    public Result findEntityNotUpdatedPage(@RequestParam Integer pageNum,
+                                           @RequestParam Integer pageSize) {
+        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(EntityInfo::getIsDeleted, false);
+        lambdaQueryWrapper.eq(EntityInfo::getUpdated, false);
+        return Result.success(entityInfoService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
     }
 
 
@@ -76,18 +103,18 @@ public class EntityInfoController {
         return Result.success(entityInfoService.saveOrUpdate(entityInfo));
     }
 
-    /**
-     * 查询没有update的实体
-     *
-     * @return
-     */
-    @ApiOperation("从数据库中查询没有被更新（到neo4j中）的实体")
-    @GetMapping("/waitingForUpdate")
-    public Result findEntityNotUpdated() {
-        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(EntityInfo::getUpdated, false);
-        return Result.success(entityInfoService.list(lambdaQueryWrapper));
-    }
+//    /**
+//     * 查询没有update的实体
+//     *
+//     * @return
+//     */
+//    @ApiOperation("从数据库中查询没有被更新（到neo4j中）的实体")
+//    @GetMapping("/waitingForUpdate")
+//    public Result findEntityNotUpdated() {
+//        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        lambdaQueryWrapper.eq(EntityInfo::getUpdated, false);
+//        return Result.success(entityInfoService.list(lambdaQueryWrapper));
+//    }
 
     @ApiOperation("创建新节点")
     @PostMapping("/executeCypher/create")
@@ -101,10 +128,22 @@ public class EntityInfoController {
         return Result.success(entityInfoService.setNode(entityId));
     }
 
+    @ApiOperation("更改节点信息")
+    @PostMapping("/executeCypher/setNodeInfo")
+    public Result setNodeInfo(@RequestBody List<Integer> entityIds) {
+        return Result.success(entityInfoService.setNodeInfo(entityIds));
+    }
+
     @ApiOperation("删除节点")
-    @PostMapping("/executeCypher/delete")
-    public Result deleteNode(Integer entityId) {
+    @PostMapping("/executeCypher/delete/{entityId}")
+    public Result deleteNode(@PathVariable Integer entityId) {
         entityInfoService.deleteNode(entityId);
+        return Result.success();
+    }
+    @ApiOperation("批量删除节点")
+    @PostMapping("/executeCypher/delete/batch")
+    public Result deleteNodeBatch(@RequestBody List<Integer> entityIds) {
+        entityInfoService.deleteNodeBatch(entityIds);
         return Result.success();
     }
 }
