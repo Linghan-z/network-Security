@@ -83,6 +83,7 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
     @Override
     public String setNodeInfo(List<Integer> entityIds) {
         String entityValues = "";
+        Integer idCount = entityIds.size();
         for (Integer entityId : entityIds) {
             EntityInfo entityInfo = queryEntity(entityId);
             String entityValue;
@@ -91,8 +92,8 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
             } else {
                 entityValue = doSetNodeInfo(entityInfo);
             }
-            entityValues.concat(", ");
             entityValues.concat(entityValue);
+            entityValues.concat(", ");
         }
         return entityValues;
     }
@@ -109,6 +110,7 @@ public class EntityInfoServiceImpl extends ServiceImpl<EntityInfoMapper, EntityI
         if (entityInfo.getNeo4jId() != null) {  // 证明这个实体在neo4j中有对应的节点，不是新增的，需要更新neo4j中的信息
             Long neo4jId = entityInfo.getNeo4jId();
             neo4jEntityRepository.deleteNodeById(label, neo4jId);
+            entityInfo.setNeo4jId(null);
         }
         entityInfo.setIsDeleted(true);
         entityInfoMapper.updateById(entityInfo);

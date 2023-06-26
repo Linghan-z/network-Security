@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlhhh.networksecurity.common.Result;
 import com.zlhhh.networksecurity.entity.EntityInfo;
-import com.zlhhh.networksecurity.entity.dto.OrganizationEntityDTO;
+import com.zlhhh.networksecurity.entity.dto.EntityValueDTO;
 import com.zlhhh.networksecurity.service.EntityInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,25 +41,43 @@ public class EntityInfoController {
         lambdaQueryWrapper.eq(EntityInfo::getIsDeleted, false);
         return Result.success(entityInfoService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
     }
+    @ApiOperation("查询实体的详细信息")
+    @GetMapping("/searchDetail/{entityValue}")
+    public Result searchDetail(@PathVariable String entityValue) {
+        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(EntityInfo::getValue, entityValue);
+        List<EntityInfo> entities = entityInfoService.list(lambdaQueryWrapper);
+        EntityInfo entityInfo;
+        if (!entities.isEmpty()) {
+            entityInfo = entities.get(0);
+        } else {
+            entityInfo = null;
+        }
+        return Result.success(entityInfo);
+    }
 
+    /**
+     * 查询所有的组织, 用于传给组织的选择输入框
+     */
     @GetMapping("/organizations")
     public Result getOrganizations() {
         LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(EntityInfo::getLabel, "Organization");
         List<EntityInfo> entityInfoList = entityInfoService.list(lambdaQueryWrapper);
-        List<OrganizationEntityDTO> organizationEntityDTOList = new ArrayList<>();
+        List<EntityValueDTO> entityValueDTOList = new ArrayList<>();
         for (EntityInfo entityInfo : entityInfoList) {
-            OrganizationEntityDTO organizationEntityDTO = new OrganizationEntityDTO();
-            organizationEntityDTO.setValue(entityInfo.getValue());
-            organizationEntityDTOList.add(organizationEntityDTO);
+            EntityValueDTO entityValueDTO = new EntityValueDTO();
+            entityValueDTO.setValue(entityInfo.getValue());
+            entityValueDTOList.add(entityValueDTO);
         }
-        return Result.success(organizationEntityDTOList);
+        return Result.success(entityValueDTOList);
     }
 
     /**
      * 查询实体的信息（模糊查询
-     * @param pageNum 1
-     * @param pageSize 当前页数
+     *
+     * @param pageNum     1
+     * @param pageSize    当前页数
      * @param entityValue 实体的value
      * @return Result
      */
@@ -70,12 +88,13 @@ public class EntityInfoController {
                              @RequestParam(defaultValue = "") String entityValue) {
         LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.like(Strings.isNotEmpty(entityValue), EntityInfo::getValue, entityValue);
-        return Result.success(entityInfoService.page(new Page<>(pageNum,pageSize), lambdaQueryWrapper));
+        return Result.success(entityInfoService.page(new Page<>(pageNum, pageSize), lambdaQueryWrapper));
     }
 
     /**
      * 查询没有更新到neo4j中的实体
-     * @param pageNum 1
+     *
+     * @param pageNum  1
      * @param pageSize 当前页数
      * @return Result
      */
@@ -101,6 +120,22 @@ public class EntityInfoController {
     public Result save(@RequestBody EntityInfo entityInfo) {
         entityInfo.setUpdated(false);
         return Result.success(entityInfoService.saveOrUpdate(entityInfo));
+    }
+
+    @ApiOperation("根据实体的Value查询实体id")
+    @GetMapping("/searchId/{entityValue}")
+    public Result searchByValue(@PathVariable String entityValue) {
+        LambdaQueryWrapper<EntityInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(EntityInfo::getValue, entityValue);
+        List<EntityInfo> entities = entityInfoService.list(lambdaQueryWrapper);
+        Integer entityId;
+        if (!entities.isEmpty()) {
+            EntityInfo entity = entities.get(0);
+            entityId = entity.getId();
+        } else {
+            entityId = null;
+        }
+        return Result.success(entityId);
     }
 
 //    /**
@@ -140,6 +175,7 @@ public class EntityInfoController {
         entityInfoService.deleteNode(entityId);
         return Result.success();
     }
+
     @ApiOperation("批量删除节点")
     @PostMapping("/executeCypher/delete/batch")
     public Result deleteNodeBatch(@RequestBody List<Integer> entityIds) {

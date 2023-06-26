@@ -15,8 +15,11 @@
       <i class="el-icon-house"></i><span slot="title">主页</span>
     </el-menu-item>
     <el-submenu index="">
-      <template slot="title"><i class="el-icon-menu"></i><span slot="title">Neo4j</span></template>
-      <el-menu-item index="/neo4j">
+      <template slot="title"><i class="el-icon-share"></i><span slot="title">Neo4j</span></template>
+      <el-menu-item index="/neo4jRelation">
+        <template slot="title"><i class="el-icon-reading"></i>组织关系</template>
+      </el-menu-item>
+      <el-menu-item index="/neo4jOrganization">
         <template slot="title"><i class="el-icon-s-custom"></i>图谱关系查看</template>
       </el-menu-item>
       <el-menu-item index="/neo4jDetail">
@@ -28,10 +31,10 @@
         <template slot="title"><i class="el-icon-s-custom"></i>用户管理</template>
       </el-menu-item>
       <el-menu-item index="/entityInfoDetail">
-        <template slot="title"><i class="el-icon-document"></i>实体信息管理</template>
+        <template slot="title"><i class="el-icon-s-data"></i>实体信息管理</template>
       </el-menu-item>
       <el-menu-item index="/modifyTripleData">
-        <template slot="title"><i class="el-icon-document"></i>三元组管理</template>
+        <template slot="title"><i class="el-icon-s-data"></i>三元组管理</template>
       </el-menu-item>
 <!--      <el-submenu index="2-4">-->
 <!--        <template slot="title">选项4</template>-->

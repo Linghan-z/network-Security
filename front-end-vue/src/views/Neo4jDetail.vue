@@ -2,16 +2,6 @@
   <div>
     <el-row class="search-row row_style flex row justify-start align-center">
       <span class="attribute_row"><i class="el-icon-search mr-5"></i>搜索 </span>
-<!--      <span class="search-text">要查询的类别：</span>-->
-<!--      <el-select v-model="label" placeholder="请选择" style="width: 150px;">-->
-<!--        <el-option-->
-<!--            v-for="item in entities"-->
-<!--            :key="item.value"-->
-<!--            :label="item.label"-->
-<!--            :value="item.value">-->
-<!--        </el-option>-->
-<!--      </el-select>-->
-<!--      <span style="width: 150px"></span>-->
       <span class="search-text">请输入要查询内容：</span>
       <el-input v-model="entityName" placeholder="请输入内容" @keyup.enter.native="searchEntity"
                 style="width: 200px; margin-right: 50px"></el-input>
@@ -42,20 +32,20 @@
     </el-row>
     <el-row class="neo4j-row row_style column">
       <span class="attribute_row"><i class="el-icon-share mr-5"></i>知识图谱 </span>
-      <Neo4j
-          :cypher=this.cypher
-          :style="{height: neo4jHeight + 'px'}"></Neo4j>
+      <EChartsDisplay
+          ref="eChartDisplay"
+          :style="{height: neo4jHeight + 'px'}"></EChartsDisplay>
     </el-row>
   </div>
 </template>
 
 <script>
-import Neo4j from "@/components/Neo4j.vue";
+import EChartsDisplay from "@/components/EChartsDisplay.vue";
 
 export default {
   name: "Neo4jDetail",
   components: {
-    Neo4j
+    EChartsDisplay
   },
   data() {
     return {
@@ -86,7 +76,6 @@ export default {
           }],
       label: 'neo4jNodeOrganization',
       entityName: '',
-      cypher: '',
       neo4jHeight: 0,
       entity: ''
     }
@@ -96,7 +85,7 @@ export default {
       try {
         console.log(this.label)
         console.log(this.entityName)
-        this.request.get("/entityInfo/" + this.entityName, {
+        this.request.get("/entityInfo/searchDetail/" + this.entityName, {
           params: {
             entityName: this.entityName
           }
@@ -116,25 +105,14 @@ export default {
           }
           this.neo4jHeight = 700
           this.tableData = Object.entries(res.data).map(([key, value]) => ({attribute: key, value}));
-          this.generateCypher()
+          this.$refs.eChartDisplay.drawECharts('http://localhost:8080/triples/echarts/entity?entityValue=' + encodeURIComponent(this.entityName))
           this.entity = this.entityName
           // console.log(this.neo4jHeight)
-          console.log(this.cypher)
         })
       } catch (error) {
         console.error(error)
       }
     },
-    generateCypher() {
-      if (this.label === 'neo4jNodeOrganization') {
-        this.cypher = "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_from RETURN p UNION " +
-            "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_has_area RETURN p UNION " +
-            "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_has_attacktype RETURN p UNION " +
-            "MATCH p=(a)-[r]->(b) WHERE a.value = '" + this.entityName + "' and r:organization_has_industry RETURN p"
-      } else {
-        this.cypher = 'Match (a) WHERE a.value="' + this.entityName + '" RETURN a'
-      }
-    }
   }
 }
 </script>

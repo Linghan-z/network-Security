@@ -1,14 +1,6 @@
 <template>
   <div>
     <meta charset="UTF-8"/>
-    <el-select v-model="organizations" multiple clearable placeholder="请选择">
-      <el-option
-          v-for="item in options"
-          :key="item.value"
-          :value="item.value">
-      </el-option>
-    </el-select>
-    <el-button class="ml-5" type="primary" @click="draw">搜索</el-button>
     <div id="main" style="width: 80vw; height: 700px"></div>
   </div>
 
@@ -20,36 +12,31 @@ import * as echarts from 'echarts'
 import $ from 'jquery'
 
 export default {
-  name: "Echarts",
+  name: "EchartsDisplay",
+  props: {
+    url: String,
+  },
   data() {
     return {
       options: [],
-      organizations: ["海莲花"],
     }
   },
-  created() {
-    this.getOrganizations()
-  },
-  mounted() {  // 页面元素渲染之后再触发
-    this.draw()
-  },
   methods: {
-    getOrganizations() {
-      this.request.get("/entityInfo/organizations").then(res => {
-        this.options = res.data
-      })
+    drawECharts(url) {
+      this.generateUrl(url)
+      this.draw()
+    },
+    generateUrl(url) {
+      this.url = url
     },
     draw() {
       let chartDom = document.getElementById('main');
-      let myChart = null
-      myChart = echarts.init(chartDom);
+      let myChart = echarts.init(chartDom);
       let option;
       const params = new URLSearchParams();
-      for (let i = 0; i < this.organizations.length; i++) {
-        params.append('organizationNameList', this.organizations[i]);
-      }
       myChart.showLoading();
-      $.getJSON('http://localhost:8080/triples/echarts/organization?' + params.toString(), function (graph) {
+      $.getJSON(this.url, function (graph) {
+        console.log(graph)
         myChart.hideLoading();
         option = {
           tooltip: {},
@@ -72,13 +59,18 @@ export default {
               links: graph.links,
               categories: graph.categories,
               roam: true,
-              zoom: 2.5,
+              zoom: 2,
               draggable: true,
               edgeSymbol: ['circle', 'arrow'],
               edgeSymbolSize: [2, 5],
               force: {
-                edgeLength: 50
+                edgeLength: 30,
+                layoutAnimation: true,
+                repulsion: 100,
+                gravity: 0.2,
+                friction: 0.1
               },
+              nodeScaleRatio: 0.8,
               label: {
                 show: true,
                 position: 'inside',
@@ -88,8 +80,8 @@ export default {
                 hideOverlap: true
               },
               scaleLimit: {
-                min: 1.5,
-                max: 4
+                min: 0.5,
+                max: 5
               },
               lineStyle: {
                 color: 'source',
@@ -97,7 +89,7 @@ export default {
               emphasis: {
                 focus: 'adjacency',
                 lineStyle: {
-                  width: 10
+                  width: 5
                 }
               }
             }
@@ -110,6 +102,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
 </style>

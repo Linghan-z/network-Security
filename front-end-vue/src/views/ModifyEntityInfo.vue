@@ -123,8 +123,8 @@
     <!-- Form -->
     <el-dialog title="新增" :visible.sync="dialogFormVisible" width="30%" class="flex column justify-center, align-start">
       <div style="margin-bottom: 20px">
-        <span class="ml-5 mr-5" style="font-size: 14px; margin-right: 20px">选择类别</span>
-        <el-select v-model="form.label" @change = handleLabelChange placeholder="请选择">
+        <span style="font-size: 14px; margin-right: 15px; margin-left: 10px">选择类别</span>
+        <el-select v-model="label" @change = handleLabelChange placeholder="请选择">
           <el-option
               v-for="item in labelOptions"
               :key="item.value"
@@ -134,11 +134,14 @@
         </el-select>
       </div>
       <el-form label-width="80px">
-        <el-form-item label="节点Value">
+        <el-form-item label="节点类型">
+          <el-input v-model="form.label" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="节点值">
           <el-input v-model="form.value" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="介绍"  v-show="handleShowIntroduction">
-          <el-input type="textarea" autosize="true" v-model="form.introduction" autocomplete="off"></el-input>
+          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 20}" v-model="form.introduction" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="创建时间" v-show="isOrganization">
           <el-input v-model="form.occurtime" autocomplete="off"></el-input>
@@ -259,7 +262,7 @@ export default {
     },
     del(id) {
       this.request.post("/entityInfo/executeCypher/delete/" + id).then(res => {
-        if (res.data) {
+        if (res.code === "200") {
           this.$message.success("Delete success")
           this.load()
         } else {
@@ -279,7 +282,7 @@ export default {
     delBatch() {
       let ids = this.multipleSelection.map(v => v.id)  //[{}, {}, {}] => [1, 2, 3]
       this.request.post("/entityInfo/executeCypher/delete/batch", ids).then(res => {
-        if (res.data) {
+        if (res.code === "200") {
           this.$message.success("Delete batch success")
           this.load()
         } else {
@@ -293,6 +296,7 @@ export default {
       this.load()
     },
     handleLabelChange() {
+      this.form.label = this.label
       if (this.label === "Organization"){
         this.isOrganization = true
         this.handleShowIntroduction = true
@@ -320,6 +324,7 @@ export default {
     handleAdd() {
       this.dialogFormVisible = true
       this.form = {}
+      this.form.label = this.label
     },
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
@@ -329,7 +334,7 @@ export default {
       let ids = this.multipleSelection.map(v => v.id)  //[{}, {}, {}] => [1, 2, 3]
       this.request.post("/entityInfo/executeCypher/setNodeInfo", ids).then(res => {
         console.log(res)
-        if (res.data) {
+        if (res.code === "200") {
           this.$message.success("update batch success")
           this.load()
         } else {
